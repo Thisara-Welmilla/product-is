@@ -72,3 +72,7 @@ app_password= "dashboard"
 #password= "xxxx"
 #hostname= "smtp.gmail.com"
 #port= 587
+
+[tenant_context]
+enable_tenant_qualified_urls = "true"
+enable_tenanted_sessions = "true"
