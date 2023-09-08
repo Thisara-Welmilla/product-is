@@ -57,6 +57,7 @@ public class ISIntegrationTest {
         backendURL = isServer.getContextUrls().getBackEndUrl();
         serverURL = backendURL.replace("services/", "");
         loginLogoutClient = new LoginLogoutClient(isServer);
+        log.info("ss-testInit-IS-intregartion");
         sessionCookie = loginLogoutClient.login();
         identityContextUrls = isServer.getContextUrls();
         tenantInfo = isServer.getContextTenant();
@@ -66,12 +67,14 @@ public class ISIntegrationTest {
     protected void init(String instance, String domainKey, String userKey) throws Exception {
         isServer = new AutomationContext("IDENTITY", instance, domainKey, userKey);
         loginLogoutClient = new LoginLogoutClient(isServer);
+        log.info("ss-testInit-IS-intregartion2");
         sessionCookie = loginLogoutClient.login();
         backendURL = isServer.getContextUrls().getBackEndUrl();
         serverURL = backendURL.replace("services/", "");
     }
 
     protected String login() throws Exception{
+        log.info("ss-testInit-IS-3");
         return  new AuthenticatorClient(backendURL).login(isServer.getSuperTenant().getTenantAdmin().getUserName(),
                 isServer.getSuperTenant().getTenantAdmin().getPassword(),
                 isServer.getInstance().getHosts().get("default"));

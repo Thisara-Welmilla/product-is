@@ -83,6 +83,7 @@ public class ScenarioTestBase {
 
     protected void loginAndObtainSessionCookie() throws LoginAuthenticationExceptionException, RemoteException {
         loginClient = new AuthenticatorClient(backendServiceURL);
+        log.info("ss-testInit-IS-intregartion7");
         sessionCookie = loginClient.login(ADMIN_USERNAME, ADMIN_PASSWORD, null);
     }
 
@@ -90,6 +91,7 @@ public class ScenarioTestBase {
             throws LoginAuthenticationExceptionException, RemoteException {
 
         loginClient = new AuthenticatorClient(backendServiceURL);
+        log.info("ss-loginAndObtainSessionCookie");
         sessionCookie = loginClient.login(username, password, null);
     }
 
