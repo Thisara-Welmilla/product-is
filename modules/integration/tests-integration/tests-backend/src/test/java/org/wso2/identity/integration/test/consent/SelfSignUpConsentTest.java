@@ -113,8 +113,8 @@ public class SelfSignUpConsentTest extends ISIntegrationTest {
         tenantUserMgtClient = new UserManagementClient(backendURL, tenantCookie);
         isServerBackendUrl = isServer.getContextUrls().getWebAppURLHttps();
         consentEndpoint = isServerBackendUrl + "/t/" + secondaryTenantDomain + CONSNT_ENDPOINT_SUFFIX;
-        selfRegisterDoEndpoint = isServerBackendUrl + "/accountrecoveryendpoint/register.do";
-        signupDoEndpoint = isServerBackendUrl + "/accountrecoveryendpoint/signup.do";
+        selfRegisterDoEndpoint = isServerBackendUrl + "/t/" + secondaryTenantDomain + "/accountrecoveryendpoint/register.do";
+        signupDoEndpoint = isServerBackendUrl + "/t/%s/accountrecoveryendpoint/signup.do";
         selfRegistrationMeEndpoint = isServerBackendUrl + "/t/" + secondaryTenantDomain + USER_RECOVERY_ME_ENDPOINT;
         superTenantResidentIDP = superTenantIDPMgtClient.getResidentIdP();
         tenantResidentIDP = tenantIDPMgtClient.getResidentIdP();
@@ -295,8 +295,10 @@ public class SelfSignUpConsentTest extends ISIntegrationTest {
             tenantDomain = MultitenantUtils.getTenantDomain(username);
             username = MultitenantUtils.getTenantAwareUsername(username);
         }
+
+        String signupDoEndpointq = String.format(signupDoEndpoint, tenantDomain);
         String selfRegisterEndpoint =
-                signupDoEndpoint + "?" + USERNAME_QUERY_PARAM + "=" + username + "&" + TENANT_DOMAIN_QUERY_PARAM + "="
+                signupDoEndpointq + "?" + USERNAME_QUERY_PARAM + "=" + username + "&" + TENANT_DOMAIN_QUERY_PARAM + "="
                         + tenantDomain;
         HttpResponse httpResponse = sendGetRequest(client, selfRegisterEndpoint);
         return DataExtractUtil.getContentData(httpResponse);
