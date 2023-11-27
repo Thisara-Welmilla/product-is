@@ -82,10 +82,11 @@ public class OAuth2ServiceSAML2BearerGrantTestCase extends OAuth2ServiceAbstract
 
     private static final Log log = LogFactory.getLog(OAuth2ServiceSAML2BearerGrantTestCase.class);
 
-    private static final String COMMON_AUTH_URL = "https://localhost:9853/commonauth";
+    private static String commonAuthUrl;
     private static final String USER_AGENT = "Apache-HttpClient/4.2.5 (java 1.5)";
     private static final String ACS_URL = "http://localhost:8490/%s/home.jsp";
-    private static final String SAML_SSO_URL = "https://localhost:9853/samlsso";
+    private static String samlSsoUrl;
+    private static String accessTokenEndpoint;
     private static final String ISSUER = "travelocity.com";
 
     private Lookup<CookieSpecProvider> cookieSpecRegistry;
@@ -97,6 +98,9 @@ public class OAuth2ServiceSAML2BearerGrantTestCase extends OAuth2ServiceAbstract
     public void testInit() throws Exception {
 
         super.init(TestUserMode.SUPER_TENANT_USER);
+        commonAuthUrl = getTenantQualifiedURL("https://localhost:9853/commonauth", tenantInfo.getDomain());
+        samlSsoUrl = getTenantQualifiedURL("https://localhost:9853/samlsso", tenantInfo.getDomain());
+        accessTokenEndpoint = getTenantQualifiedURL(OAuth2Constant.ACCESS_TOKEN_ENDPOINT, tenantInfo.getDomain());
 
         ApplicationResponseModel application = createSAMLApplication();
         samlAppId = application.getId();
@@ -240,8 +244,8 @@ public class OAuth2ServiceSAML2BearerGrantTestCase extends OAuth2ServiceAbstract
         serviceProvider.setResponseSigning(new SAMLResponseSigning().enabled(true));
 
         SAMLAssertionConfiguration assertion = new SAMLAssertionConfiguration();
-        assertion.addAudiencesItem(OAuth2Constant.ACCESS_TOKEN_ENDPOINT);
-        assertion.addRecipientsItem(OAuth2Constant.ACCESS_TOKEN_ENDPOINT);
+        assertion.addAudiencesItem(accessTokenEndpoint);
+        assertion.addRecipientsItem(accessTokenEndpoint);
 
         SingleSignOnProfile ssoProfile = new SingleSignOnProfile().attributeConsumingServiceIndex("1239245949");
         ssoProfile.setAssertion(assertion);
@@ -289,7 +293,7 @@ public class OAuth2ServiceSAML2BearerGrantTestCase extends OAuth2ServiceAbstract
         Assert.assertEquals(response.getStatusLine().getStatusCode(), 200, "HTTP 200 expected for request login page.");
         String sessionKey = Utils.extractDataFromResponse(response, CommonConstants.SESSION_DATA_KEY, 1);
         Assert.assertTrue(StringUtils.isNotBlank(sessionKey), "Session Key can't be empty.");
-        response = Utils.sendPOSTMessage(sessionKey, COMMON_AUTH_URL, USER_AGENT, ACS_URL, "travelocity.com",
+        response = Utils.sendPOSTMessage(sessionKey, commonAuthUrl, USER_AGENT, ACS_URL, "travelocity.com",
                 userInfo.getUserName(), userInfo.getPassword(), client);
         EntityUtils.consume(response.getEntity());
 
@@ -298,7 +302,7 @@ public class OAuth2ServiceSAML2BearerGrantTestCase extends OAuth2ServiceAbstract
             Assert.assertNotNull(pastrCookie, "pastr cookie not found in response.");
             EntityUtils.consume(response.getEntity());
 
-            response = Utils.sendPOSTConsentMessage(response, COMMON_AUTH_URL, USER_AGENT, String.format(ACS_URL,
+            response = Utils.sendPOSTConsentMessage(response, commonAuthUrl, USER_AGENT, String.format(ACS_URL,
                     "travelocity.com"), client, pastrCookie);
             EntityUtils.consume(response.getEntity());
         }
@@ -354,7 +358,7 @@ public class OAuth2ServiceSAML2BearerGrantTestCase extends OAuth2ServiceAbstract
 
         List<NameValuePair> urlParameters = new ArrayList<>();
 
-        HttpPost post = new HttpPost(SAML_SSO_URL);
+        HttpPost post = new HttpPost(samlSsoUrl);
         post.setHeader("User-Agent", USER_AGENT);
 
         urlParameters.add(new BasicNameValuePair(CommonConstants.SAML_REQUEST_PARAM, samlMsgValue));
@@ -373,7 +377,7 @@ public class OAuth2ServiceSAML2BearerGrantTestCase extends OAuth2ServiceAbstract
      */
     private HttpResponse sendSAMLAssertion(String samlAssertion) throws IOException {
 
-        HttpPost request = new HttpPost(OAuth2Constant.ACCESS_TOKEN_ENDPOINT);
+        HttpPost request = new HttpPost(accessTokenEndpoint);
         List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("grant_type", OAuth2Constant.OAUTH2_GRANT_TYPE_SAML2_BEARER));
         urlParameters.add(new BasicNameValuePair("assertion", samlAssertion));

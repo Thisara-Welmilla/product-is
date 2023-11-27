@@ -51,7 +51,7 @@ public class OIDCMetadataTest extends ISIntegrationTest {
             "https://localhost:9853/t/wso2.com/oauth2/oidcdiscovery/.well-known/openid-configuration";
     private static final String OIDCDISCOVERY_ENDPOINT_WITH_SUPER_TENANT_AS_PATH_PARAM =
             "https://localhost:9853/oauth2/oidcdiscovery/.well-known/openid-configuration";
-    private static final String INTROSPECTION_ENDPOINT_SUPER_TENANT = "https://localhost:9853/oauth2/introspect";
+    private static final String INTROSPECTION_ENDPOINT_SUPER_TENANT = "https://localhost:9853/t/carbon.super/oauth2/introspect";
     private static final String INTROSPECTION_ENDPOINT_TENANT = "https://localhost:9853/t/wso2.com/oauth2/introspect";
     private static final String CHECK_SESSION_IFRAME = "/oidc/checksession";
     private static final String ISSUER = "/oauth2/token";
@@ -60,13 +60,13 @@ public class OIDCMetadataTest extends ISIntegrationTest {
     private static final String END_SESSION_ENDPOINT = "/oidc/logout";
     private static final String REVOCATION_ENDPOINT = "/oauth2/revoke";
     private static final String USERINFO_ENDPOINT =	"/oauth2/userinfo";
-    private static final String JKWS_URI_SUPER_TENANT =	"https://localhost:9853/oauth2/jwks";
+    private static final String JKWS_URI_SUPER_TENANT =	"https://localhost:9853/t/carbon.super/oauth2/jwks";
     private static final String JKWS_URI_TENANT = "https://localhost:9853/t/wso2.com/oauth2/jwks";
     private static final String REGISTRATION_ENDPOINT_SUPER_TENANT =
-            "https://localhost:9853/api/identity/oauth2/dcr/v1.1/register";
+            "https://localhost:9853/t/carbon.super/api/identity/oauth2/dcr/v1.1/register";
     private static final String REGISTRATION_ENDPOINT_TENANT =
             "https://localhost:9853/t/wso2.com/api/identity/oauth2/dcr/v1.1/register";
-    private static final String BASE_IS_URL = "https://localhost:9853";
+    private static final String BASE_IS_URL = "https://localhost:9853/t/carbon.super";
     private static final String TENANTED_BASE_IS_URL = "https://localhost:9853/t/wso2.com";
 
     @Test(groups = "wso2.is", description = "This test method will test OIDC Metadata endpoints.")

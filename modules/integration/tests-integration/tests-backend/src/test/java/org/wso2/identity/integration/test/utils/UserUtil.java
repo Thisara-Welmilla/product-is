@@ -92,11 +92,7 @@ public class UserUtil {
 
     private static String getPath(String tenantDomain) {
 
-        if (tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
-            return SERVER_URL + SCIM2_USERS_ENDPOINT;
-        } else {
-            return SERVER_URL + "/t/" + tenantDomain + SCIM2_USERS_ENDPOINT;
-        }
+        return SERVER_URL + "/t/" + tenantDomain + SCIM2_USERS_ENDPOINT;
     }
 
     private static String getAuthzHeader(String adminUsername, String adminPassword) {

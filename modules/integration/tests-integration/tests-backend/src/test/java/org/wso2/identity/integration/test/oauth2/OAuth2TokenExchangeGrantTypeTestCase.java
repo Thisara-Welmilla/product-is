@@ -65,10 +65,10 @@ public class OAuth2TokenExchangeGrantTypeTestCase extends AbstractIdentityFedera
 
     private static final String PRIMARY_IS_IDP_NAME = "trustedIdP";
     private static final String PRIMARY_IS_SP_NAME = "primarySP";
-    private static final String PRIMARY_IS_TOKEN_ENDPOINT = "https://localhost:9853/oauth2/token";
+    private static final String PRIMARY_IS_TOKEN_ENDPOINT = "https://localhost:9853/t/carbon.super/oauth2/token";
     private static final String SECONDARY_IS_SP_NAME = "secondarySP";
-    private static final String SECONDARY_IS_TOKEN_ENDPOINT = "https://localhost:9854/oauth2/token";
-    private static final String SECONDARY_IS_JWKS_URI = "https://localhost:9854/oauth2/jwks";
+    private static final String SECONDARY_IS_TOKEN_ENDPOINT = "https://localhost:9854/t/carbon.super/oauth2/token";
+    private static final String SECONDARY_IS_JWKS_URI = "https://localhost:9854/t/carbon.super/oauth2/jwks";
 
     protected OauthAdminClient adminClient;
     private String secondaryISClientID;

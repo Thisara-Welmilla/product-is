@@ -259,30 +259,20 @@ public class OAuth2RestClient extends RestBaseClient {
     }
 
     private String getApplicationsPath(String serverUrl, String tenantDomain) {
-        if (tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
-            return serverUrl + API_SERVER_BASE_PATH + APPLICATION_MANAGEMENT_PATH;
-        } else {
-            return serverUrl + TENANT_PATH + tenantDomain + PATH_SEPARATOR + API_SERVER_BASE_PATH + APPLICATION_MANAGEMENT_PATH;
-        }
+
+        return serverUrl + TENANT_PATH + tenantDomain + PATH_SEPARATOR + API_SERVER_BASE_PATH + APPLICATION_MANAGEMENT_PATH;
     }
 
     private String getAPIResourcesPath(String serverUrl, String tenantDomain) {
 
-        if (tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
-            return serverUrl + API_SERVER_BASE_PATH + API_RESOURCE_MANAGEMENT_PATH;
-        } else {
-            return serverUrl + TENANT_PATH + tenantDomain + PATH_SEPARATOR + API_SERVER_BASE_PATH +
+
+        return serverUrl + TENANT_PATH + tenantDomain + PATH_SEPARATOR + API_SERVER_BASE_PATH +
                     API_RESOURCE_MANAGEMENT_PATH;
-        }
     }
 
     private String getSCIM2RoleV2Path(String serverUrl, String tenantDomain) {
 
-        if (tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
-            return serverUrl + SCIM_BASE_PATH + ROLE_V2_BASE_PATH;
-        } else {
-            return serverUrl + TENANT_PATH + tenantDomain + PATH_SEPARATOR + SCIM_BASE_PATH + ROLE_V2_BASE_PATH;
-        }
+        return serverUrl + TENANT_PATH + tenantDomain + PATH_SEPARATOR + SCIM_BASE_PATH + ROLE_V2_BASE_PATH;
     }
 
     private Header[] getHeaders() {

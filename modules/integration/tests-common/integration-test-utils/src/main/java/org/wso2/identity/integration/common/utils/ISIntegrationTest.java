@@ -159,9 +159,7 @@ public class ISIntegrationTest {
     public String getTenantQualifiedURL(String endpointURL, String tenantDomain) {
 
         try {
-            if(!tenantDomain.isBlank() && !tenantDomain.equalsIgnoreCase(
-                    MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
-
+            if(!tenantDomain.isBlank()) {
                 String baseURL = getBaseURL();
                 endpointURL = endpointURL.replace(baseURL,
                         baseURL + TENANTED_URL_PATH_SPECIFIER + tenantDomain);
@@ -181,7 +179,7 @@ public class ISIntegrationTest {
      */
     public static String getTenantedRelativePath(String endpointURLWithHostname, String tenantDomain) {
 
-        if(!tenantDomain.isBlank() && !tenantDomain.equalsIgnoreCase(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+        if(!tenantDomain.isBlank()) {
             endpointURLWithHostname = TENANTED_URL_PATH_SPECIFIER + tenantDomain + endpointURLWithHostname;
         }
         return endpointURLWithHostname;

@@ -67,6 +67,7 @@ public class SAMLIdPInitiatedSLOTestCase extends AbstractSAMLSSOTestCase {
     private static final Long WAIT_TIME = 10000L;
     private String appOneId;
     private String appTwoId;
+    private String samlSsoUrl;
 
     @Factory(dataProvider = "samlConfigProvider")
     public SAMLIdPInitiatedSLOTestCase(SAMLConfig samlConfigOne, SAMLConfig samlConfigTwo) {
@@ -94,6 +95,8 @@ public class SAMLIdPInitiatedSLOTestCase extends AbstractSAMLSSOTestCase {
 
         super.init(samlConfigOne.getUserMode());
         super.testInit();
+
+        samlSsoUrl = getTenantQualifiedURL(SAML_SSO_URL, tenantInfo.getDomain());
 
         userId = super.addUser(samlConfigOne);
 
@@ -165,16 +168,17 @@ public class SAMLIdPInitiatedSLOTestCase extends AbstractSAMLSSOTestCase {
                     httpClient);
 
             String sessionKey = Utils.extractDataFromResponse(response, CommonConstants.SESSION_DATA_KEY, 1);
-            response = Utils.sendPOSTMessage(sessionKey, SAML_SSO_URL, USER_AGENT, ACS_URL, samlConfigOne.getApp().
+            response = Utils.sendPOSTMessage(sessionKey, samlSsoUrl, USER_AGENT, ACS_URL, samlConfigOne.getApp().
                             getArtifact(), samlConfigOne.getUser().getUsername(), samlConfigOne.getUser().getPassword()
-                    , httpClient);
+                    , httpClient, samlSsoUrl);
 
             if (Utils.requestMissingClaims(response)) {
                 String pastrCookie = Utils.getPastreCookie(response);
                 Assert.assertNotNull(pastrCookie, "pastr cookie not found in response.");
                 EntityUtils.consume(response.getEntity());
 
-                response = Utils.sendPOSTConsentMessage(response, COMMON_AUTH_URL, USER_AGENT, String.format(ACS_URL
+                response = Utils.sendPOSTConsentMessage(response, getTenantQualifiedURL(COMMON_AUTH_URL,
+                        tenantInfo.getDomain()), USER_AGENT, String.format(ACS_URL
                         , samlConfigOne.getApp().getArtifact()), httpClient, pastrCookie);
                 EntityUtils.consume(response.getEntity());
             }
@@ -209,7 +213,7 @@ public class SAMLIdPInitiatedSLOTestCase extends AbstractSAMLSSOTestCase {
         try {
             logViewer.clearLogs();
 
-            HttpResponse response = Utils.sendGetRequest(SAML_IDP_SLO_URL, USER_AGENT, httpClient);
+            HttpResponse response = Utils.sendGetRequest(getTenantQualifiedURL(SAML_IDP_SLO_URL, tenantInfo.getDomain()), USER_AGENT, httpClient);
             String resultPage = DataExtractUtil.getContentData(response);
 
             Assert.assertTrue(resultPage.contains("You have successfully logged out") &&
@@ -257,7 +261,8 @@ public class SAMLIdPInitiatedSLOTestCase extends AbstractSAMLSSOTestCase {
                 String pastrCookie = Utils.getPastreCookie(response);
                 Assert.assertNotNull(pastrCookie, "pastr cookie not found in response.");
                 EntityUtils.consume(response.getEntity());
-                response = Utils.sendPOSTConsentMessage(response, COMMON_AUTH_URL, USER_AGENT, String.format(ACS_URL
+                response = Utils.sendPOSTConsentMessage(response, getTenantQualifiedURL(COMMON_AUTH_URL,
+                        tenantInfo.getDomain()), USER_AGENT, String.format(ACS_URL
                         , samlConfigTwo.getApp().getArtifact()), httpClient, pastrCookie);
                 EntityUtils.consume(response.getEntity());
             }

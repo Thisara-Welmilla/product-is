@@ -56,7 +56,8 @@ public class TestPassiveSTSFederation extends AbstractIdentityFederationTestCase
     private static final String INBOUND_AUTH_TYPE = "samlsso";
     private static final int PORT_OFFSET_0 = 0;
     private static final int PORT_OFFSET_1 = 1;
-    private String COMMON_AUTH_URL = "https://localhost:%s/commonauth";
+    private String COMMON_AUTH_URL_PORT_OFFSET_0;
+    private String COMMON_AUTH_URL_PORT_OFFSET_1;
     private static final String PASSIVESTS_REALM = "PassiveSTSSampleApp";
     private static final String PASSIVESTS_INBOUND_AUTH_TYPE = "passivests";
     private static final String emailClaimURI = "http://wso2.org/claims/emailaddress";
@@ -64,7 +65,7 @@ public class TestPassiveSTSFederation extends AbstractIdentityFederationTestCase
     private static final String PASSIVE_STS_SAMPLE_APP_URL =
             "http://localhost:8490/PassiveSTSSampleApp";
     private static final String COMMON_AUTH_URLL =
-            "https://localhost:9853/commonauth";
+            "https://localhost:9853/t/carbon.super/commonauth";
     private static final String HTTP_RESPONSE_HEADER_LOCATION = "location";
     private static final String PASSIVE_STS_SAMPLE_APP_NAME = "/PassiveSTSSampleApp";
     private String sessionDataKey;
@@ -77,6 +78,11 @@ public class TestPassiveSTSFederation extends AbstractIdentityFederationTestCase
     public void initTest() throws Exception {
 
         super.initTest();
+
+        COMMON_AUTH_URL_PORT_OFFSET_0 = getTenantQualifiedURL(String.format("https://localhost:%s/commonauth",
+                DEFAULT_PORT + PORT_OFFSET_0), tenantInfo.getDomain());
+        COMMON_AUTH_URL_PORT_OFFSET_1 = getTenantQualifiedURL(String.format("https://localhost:%s/commonauth",
+                DEFAULT_PORT + PORT_OFFSET_1), tenantInfo.getDomain());
 
         adminUsername = userInfo.getUserName();
         adminPassword = userInfo.getPassword();
@@ -288,7 +294,7 @@ public class TestPassiveSTSFederation extends AbstractIdentityFederationTestCase
         ServiceProvider serviceProvider = getServiceProvider(PORT_OFFSET_1, SECONDARY_IS_SERVICE_PROVIDER_NAME);
         Assert.assertNotNull(serviceProvider, "Failed to create service provider 'secondarySP' in secondary IS");
 
-        updateServiceProviderWithSAMLConfigs(PORT_OFFSET_1, SECONDARY_IS_SAML_ISSUER_NAME, String.format(COMMON_AUTH_URL, DEFAULT_PORT + PORT_OFFSET_0), serviceProvider);
+        updateServiceProviderWithSAMLConfigs(PORT_OFFSET_1, SECONDARY_IS_SAML_ISSUER_NAME, COMMON_AUTH_URL_PORT_OFFSET_0, serviceProvider);
 
         updateServiceProvider(PORT_OFFSET_1, serviceProvider);
         serviceProvider = getServiceProvider(PORT_OFFSET_1, SECONDARY_IS_SERVICE_PROVIDER_NAME);
@@ -319,7 +325,7 @@ public class TestPassiveSTSFederation extends AbstractIdentityFederationTestCase
     private String authenticateWithSecondaryIS(HttpClient client, String sessionId)
             throws Exception {
 
-        HttpPost request = new HttpPost(String.format(COMMON_AUTH_URL, DEFAULT_PORT + PORT_OFFSET_1));
+        HttpPost request = new HttpPost(String.format(COMMON_AUTH_URL_PORT_OFFSET_1));
         request.addHeader("User-Agent", USER_AGENT);
         request.addHeader("Referer", PRIMARY_IS_SAML_ACS_URL);
 
@@ -352,7 +358,7 @@ public class TestPassiveSTSFederation extends AbstractIdentityFederationTestCase
     private String sendSAMLResponseToPrimaryIS(HttpClient client, Map<String, String> searchResults)
             throws Exception {
 
-        HttpPost request = new HttpPost(String.format(COMMON_AUTH_URL, DEFAULT_PORT + PORT_OFFSET_0));
+        HttpPost request = new HttpPost(COMMON_AUTH_URL_PORT_OFFSET_0);
         request.setHeader("User-Agent", USER_AGENT);
 
         List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();

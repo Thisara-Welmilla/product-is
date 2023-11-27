@@ -92,6 +92,8 @@ public class CrossProtocolLogoutTestCase extends ISIntegrationTest {
     private final String APPROVE = "approve";
     private final String SCOPE_APPROVAL = "scope-approval";
     private final String USER_AGENT = "User-Agent";
+    private String commonAuthUrl;
+    private String approvalUrl;
 
     @BeforeClass(alwaysRun = true)
     public void testInit() throws Exception {
@@ -111,7 +113,11 @@ public class CrossProtocolLogoutTestCase extends ISIntegrationTest {
                 .setDefaultRequestConfig(requestConfig)
                 .setDefaultCookieSpecRegistry(cookieSpecRegistry)
                 .build();
-        SAML_SSO_URL = identityContextUrls.getWebAppURLHttps() + "/samlsso";
+
+        commonAuthUrl = getTenantQualifiedURL(OAuth2Constant.COMMON_AUTH_URL, tenantInfo.getDomain());
+        approvalUrl = getTenantQualifiedURL(OAuth2Constant.APPROVAL_URL, tenantInfo.getDomain());
+        SAML_SSO_URL = getTenantQualifiedURL(identityContextUrls.getWebAppURLHttps() + "/samlsso",
+                tenantInfo.getDomain());
     }
 
     @AfterClass(alwaysRun = true)
@@ -281,7 +287,8 @@ public class CrossProtocolLogoutTestCase extends ISIntegrationTest {
     private void performOIDCLogout() {
 
         try {
-            String oidcLogoutUrl = identityContextUrls.getWebAppURLHttps() + "/oidc/logout";
+            String oidcLogoutUrl = getTenantQualifiedURL(identityContextUrls.getWebAppURLHttps() + "/oidc/logout",
+                    tenantInfo.getDomain());
             HttpResponse response = sendGetRequest(oidcLogoutUrl);
             EntityUtils.consume(response.getEntity());
 
@@ -314,7 +321,7 @@ public class CrossProtocolLogoutTestCase extends ISIntegrationTest {
                 String pastrCookie = Utils.getPastreCookie(response);
                 Assert.assertNotNull(pastrCookie, "pastr cookie not found in response.");
                 EntityUtils.consume(response.getEntity());
-                response = Utils.sendPOSTConsentMessage(response, OAuth2Constant.COMMON_AUTH_URL,
+                response = Utils.sendPOSTConsentMessage(response, commonAuthUrl,
                         OAuth2Constant.USER_AGENT, ACS_URL, client, pastrCookie);
                 EntityUtils.consume(response.getEntity());
             }
@@ -394,7 +401,7 @@ public class CrossProtocolLogoutTestCase extends ISIntegrationTest {
         urlParameters.add(new BasicNameValuePair(CONSENT, APPROVE));
         urlParameters.add(new BasicNameValuePair(SCOPE_APPROVAL, APPROVE));
         urlParameters.add(new BasicNameValuePair("sessionDataKeyConsent", sessionDataKeyConsent));
-        return sendPostRequestWithParameters(urlParameters, OAuth2Constant.APPROVAL_URL);
+        return sendPostRequestWithParameters(urlParameters, approvalUrl);
     }
 
     public HttpResponse sendLoginPost(String sessionDataKey) throws IOException {
@@ -403,7 +410,7 @@ public class CrossProtocolLogoutTestCase extends ISIntegrationTest {
         urlParameters.add(new BasicNameValuePair("username", "admin"));
         urlParameters.add(new BasicNameValuePair("password", "admin"));
         urlParameters.add(new BasicNameValuePair("sessionDataKey", sessionDataKey));
-        return sendPostRequestWithParameters(urlParameters, OAuth2Constant.COMMON_AUTH_URL);
+        return sendPostRequestWithParameters(urlParameters, commonAuthUrl);
     }
 
     public HttpResponse sendPostRequestWithParameters(List<NameValuePair> urlParameters, String url) throws
@@ -431,7 +438,7 @@ public class CrossProtocolLogoutTestCase extends ISIntegrationTest {
         urlParameters.add(new BasicNameValuePair("grantType", OAuth2Constant.OAUTH2_GRANT_TYPE_CODE));
         urlParameters.add(new BasicNameValuePair("consumerKey", oidcAppClientId));
         urlParameters.add(new BasicNameValuePair("callbackurl", OAuth2Constant.CALLBACK_URL));
-        urlParameters.add(new BasicNameValuePair("authorizeEndpoint", OAuth2Constant.APPROVAL_URL));
+        urlParameters.add(new BasicNameValuePair("authorizeEndpoint", approvalUrl));
         urlParameters.add(new BasicNameValuePair("authorize", OAuth2Constant.AUTHORIZE_PARAM));
         urlParameters.add(new BasicNameValuePair("scope", OAuth2Constant.OAUTH2_SCOPE_OPENID_WITH_INTERNAL_LOGIN));
         return urlParameters;

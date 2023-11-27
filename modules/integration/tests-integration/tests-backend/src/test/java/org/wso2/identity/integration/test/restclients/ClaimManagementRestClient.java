@@ -64,8 +64,8 @@ public class ClaimManagementRestClient extends RestBaseClient {
      * @param claimRequest External Claim request object.
      */
     public String addExternalClaim(String dialectId, ExternalClaimReq claimRequest) throws Exception {
-        String endPointUrl = serverBasePath + CLAIM_DIALECTS_ENDPOINT_URI + PATH_SEPARATOR + dialectId +
-                CLAIMS_ENDPOINT_URI;
+        String endPointUrl = serverBasePath + "t/carbon.super/" + CLAIM_DIALECTS_ENDPOINT_URI + PATH_SEPARATOR +
+                dialectId + CLAIMS_ENDPOINT_URI;
         String jsonRequest = toJSONString(claimRequest);
         try (CloseableHttpResponse response = getResponseOfHttpPost(endPointUrl, jsonRequest, getHeaders())) {
             String[] locationElements = response.getHeaders(LOCATION_HEADER)[0].toString().split(PATH_SEPARATOR);

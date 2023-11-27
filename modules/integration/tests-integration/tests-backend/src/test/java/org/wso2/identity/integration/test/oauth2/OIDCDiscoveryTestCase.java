@@ -60,8 +60,8 @@ public class OIDCDiscoveryTestCase extends ISIntegrationTest {
     @BeforeClass(alwaysRun = true)
     public void testInit() throws Exception {
         super.init();
-        isServerBackendUrl = isServer.getContextUrls().getWebAppURLHttps();
-        webfingerEndpoint = isServerBackendUrl + WEBFINGER_ENDPOINT_SUFFIX + "?" + RESOURCE + "=" + config
+        isServerBackendUrl = getTenantQualifiedURL(isServer.getContextUrls().getWebAppURLHttps(), config.tenant);
+        webfingerEndpoint = isServer.getContextUrls().getWebAppURLHttps() + WEBFINGER_ENDPOINT_SUFFIX + "?" + RESOURCE + "=" + config
                 .getResource() + "&" + REL + "=" + relUri;
     }
 
@@ -86,7 +86,7 @@ public class OIDCDiscoveryTestCase extends ISIntegrationTest {
         Object links = ((JSONObject)obj).get("links");
         Assert.assertNotNull(links);
         String openIdProviderIssuerLocation = ((JSONObject)((JSONArray)links).get(0)).get("href").toString();
-        String urlExpected =  getTenantQualifiedURL(isServerBackendUrl + "/oauth2/token", config.getTenant());
+        String urlExpected = isServerBackendUrl + "/oauth2/token";
         Assert.assertEquals(openIdProviderIssuerLocation, urlExpected);
     }
 
@@ -116,10 +116,10 @@ public class OIDCDiscoveryTestCase extends ISIntegrationTest {
     @DataProvider(name = "webfingerConfigProvider")
     public static Object[][] webfingerConfigProvider(){
         return new DiscoveryConfig[][]{
-                {new DiscoveryConfig("acct:admin@localhost", "")},
+                {new DiscoveryConfig("acct:admin@localhost", "carbon.super")},
                 {new DiscoveryConfig("acct:admin%40wso2.com@localhost", "wso2.com")},
-                {new DiscoveryConfig("https://localhost:9443/joe", "")},
-                {new DiscoveryConfig("https://localhost:9443", "")}
+                {new DiscoveryConfig("https://localhost:9443/joe", "carbon.super")},
+                {new DiscoveryConfig("https://localhost:9443", "carbon.super")}
         };
     }
 

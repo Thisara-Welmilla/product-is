@@ -219,8 +219,8 @@ public class OAuth2ServiceAuthCodeGrantOpenIdRequestObjectTestCase extends OAuth
         urlParameters.add(new BasicNameValuePair("grantType", OAuth2Constant.OAUTH2_GRANT_TYPE_CODE));
         urlParameters.add(new BasicNameValuePair("consumerKey", consumerKey));
         urlParameters.add(new BasicNameValuePair("callbackurl", OAuth2Constant.CALLBACK_URL));
-        urlParameters.add(new BasicNameValuePair("authorizeEndpoint", OAuth2Constant.APPROVAL_URL
-                + "?request=" + REQUEST));
+        urlParameters.add(new BasicNameValuePair("authorizeEndpoint",  getTenantQualifiedURL(
+                OAuth2Constant.APPROVAL_URL, tenantInfo.getDomain()) + "?request=" + REQUEST));
         urlParameters.add(new BasicNameValuePair("authorize", OAuth2Constant.AUTHORIZE_PARAM));
         urlParameters.add(new BasicNameValuePair("scope", OAuth2Constant.OAUTH2_SCOPE_OPENID + " " +
                 OAuth2Constant.OAUTH2_SCOPE_EMAIL + " " + OAuth2Constant.OAUTH2_SCOPE_PROFILE));
@@ -353,7 +353,7 @@ public class OAuth2ServiceAuthCodeGrantOpenIdRequestObjectTestCase extends OAuth
 
     @Test(groups = "wso2.is", description = "Validate the user claim values", dependsOnMethods = "testGetAccessToken")
     public void testClaims() throws Exception {
-        HttpGet request = new HttpGet(OAuth2Constant.USER_INFO_ENDPOINT);
+        HttpGet request = new HttpGet(getTenantQualifiedURL(OAuth2Constant.USER_INFO_ENDPOINT, tenantInfo.getDomain()));
 
         request.setHeader("User-Agent", OAuth2Constant.USER_AGENT);
         request.setHeader("Authorization", "Bearer " + accessToken);
@@ -422,12 +422,12 @@ public class OAuth2ServiceAuthCodeGrantOpenIdRequestObjectTestCase extends OAuth
         urlParameters.add(new BasicNameValuePair("password", PASSWORD));
         urlParameters.add(new BasicNameValuePair("sessionDataKey", sessionDataKey));
 
-        return sendPostRequestWithParameters(client, urlParameters, OAuth2Constant.COMMON_AUTH_URL);
+        return sendPostRequestWithParameters(client, urlParameters, getTenantQualifiedURL(
+                OAuth2Constant.COMMON_AUTH_URL, tenantInfo.getDomain()));
     }
 
     private JSONObject introspectToken() throws Exception {
-        String introspectionUrl = tenantInfo.getDomain().equalsIgnoreCase("carbon.super") ?
-                OAuth2Constant.INTRO_SPEC_ENDPOINT : OAuth2Constant.TENANT_INTRO_SPEC_ENDPOINT;
+        String introspectionUrl = getTenantQualifiedURL(OAuth2Constant.INTRO_SPEC_ENDPOINT, tenantInfo.getDomain());
         return introspectTokenWithTenant(client, accessToken, introspectionUrl, adminUsername, adminPassword);
     }
 

@@ -91,6 +91,8 @@ public class SAMLFederationWithFileBasedSPAndIDPTestCase extends AbstractIdentit
     private static final String SECONDARY_IS_SAML_ISSUER_NAME = "is-sp-saml";
     private static final int PORT_OFFSET_0 = 0;
     private static final int PORT_OFFSET_1 = 1;
+    private String COMMON_AUTH_URL_PORT_OFFSET_0;
+    private String COMMON_AUTH_URL_PORT_OFFSET_1;
     //Claim Uris
     private static final String firstNameLocalClaimURI = "http://wso2.org/claims/givenname";
     private static final String firstNameRemoteIdPClaimURI = "http://is.idp/claims/givenname";
@@ -111,6 +113,12 @@ public class SAMLFederationWithFileBasedSPAndIDPTestCase extends AbstractIdentit
     public void initTest() throws Exception {
 
         super.initTest();
+
+        COMMON_AUTH_URL_PORT_OFFSET_0 = getTenantQualifiedURL(String.format("https://localhost:%s/commonauth",
+                DEFAULT_PORT + PORT_OFFSET_0), tenantInfo.getDomain());
+        COMMON_AUTH_URL_PORT_OFFSET_1 = getTenantQualifiedURL(String.format("https://localhost:%s/commonauth",
+                DEFAULT_PORT + PORT_OFFSET_1), tenantInfo.getDomain());
+
         // Apply file based configurations
         serverConfigurationManager = new ServerConfigurationManager(isServer);
         applyConfigurationsForPrimaryIS();
@@ -196,7 +204,7 @@ public class SAMLFederationWithFileBasedSPAndIDPTestCase extends AbstractIdentit
 
     protected String authenticateWithSecondaryIS(HttpClient client, String sessionId) throws Exception {
 
-        HttpPost request = new HttpPost(String.format(COMMON_AUTH_URL, DEFAULT_PORT + PORT_OFFSET_1));
+        HttpPost request = new HttpPost(COMMON_AUTH_URL_PORT_OFFSET_1);
         request.addHeader("User-Agent", USER_AGENT);
         request.addHeader("Referer", PRIMARY_IS_SAML_ACS_URL);
 
@@ -213,8 +221,7 @@ public class SAMLFederationWithFileBasedSPAndIDPTestCase extends AbstractIdentit
             Assert.assertNotNull(pastrCookie, "pastr cookie not found in response.");
             EntityUtils.consume(response.getEntity());
 
-            response = Utils.sendPOSTConsentMessage(response, String.format(COMMON_AUTH_URL, DEFAULT_PORT +
-                    PORT_OFFSET_1), USER_AGENT, locationHeader, client, pastrCookie);
+            response = Utils.sendPOSTConsentMessage(response, COMMON_AUTH_URL_PORT_OFFSET_1, USER_AGENT, locationHeader, client, pastrCookie);
             EntityUtils.consume(response.getEntity());
             locationHeader = getHeaderValue(response, "Location");
         }
@@ -240,7 +247,7 @@ public class SAMLFederationWithFileBasedSPAndIDPTestCase extends AbstractIdentit
     protected String sendSAMLResponseToPrimaryIS(HttpClient client, Map<String, String> searchResults) throws
             Exception {
 
-        HttpPost request = new HttpPost(String.format(COMMON_AUTH_URL, DEFAULT_PORT + PORT_OFFSET_0));
+        HttpPost request = new HttpPost(COMMON_AUTH_URL_PORT_OFFSET_0);
         request.setHeader("User-Agent", USER_AGENT);
 
         List<NameValuePair> urlParameters = new ArrayList<>();
@@ -256,8 +263,7 @@ public class SAMLFederationWithFileBasedSPAndIDPTestCase extends AbstractIdentit
             Assert.assertNotNull(pastrCookie, "pastr cookie not found in response.");
             EntityUtils.consume(response.getEntity());
 
-            response = Utils.sendPOSTConsentMessage(response, String.format(COMMON_AUTH_URL, DEFAULT_PORT +
-                    PORT_OFFSET_0), USER_AGENT, locationHeader, client, pastrCookie);
+            response = Utils.sendPOSTConsentMessage(response, COMMON_AUTH_URL_PORT_OFFSET_0, USER_AGENT, locationHeader, client, pastrCookie);
             EntityUtils.consume(response.getEntity());
             locationHeader = getHeaderValue(response, "Location");
         }
@@ -414,8 +420,8 @@ public class SAMLFederationWithFileBasedSPAndIDPTestCase extends AbstractIdentit
 
         SAML2ServiceProvider serviceProvider = new SAML2ServiceProvider()
                 .issuer(SECONDARY_IS_SAML_ISSUER_NAME)
-                .addAssertionConsumerUrl(String.format(COMMON_AUTH_URL, DEFAULT_PORT + PORT_OFFSET_0))
-                .defaultAssertionConsumerUrl(String.format(COMMON_AUTH_URL, DEFAULT_PORT + PORT_OFFSET_0))
+                .addAssertionConsumerUrl(COMMON_AUTH_URL_PORT_OFFSET_0)
+                .defaultAssertionConsumerUrl(COMMON_AUTH_URL_PORT_OFFSET_0)
                 .attributeProfile(new SAMLAttributeProfile()
                         .enabled(true)
                         .alwaysIncludeAttributesInResponse(true))

@@ -145,7 +145,8 @@ public class SAMLInvalidIssuerTestCase extends AbstractSAMLSSOTestCase {
             response = Utils.sendGetRequest(SAML_SSO_LOGIN_URL, USER_AGENT, httpClient);
 
             String sessionKey = Utils.extractDataFromResponse(response, CommonConstants.SAML_RESPONSE_PARAM, 1);
-            response = Utils.sendPOSTMessage(sessionKey, SAML_SSO_URL, USER_AGENT, ACS_URL, config.getApp()
+            response = Utils.sendPOSTMessage(sessionKey, getTenantQualifiedURL(SAML_SSO_URL, tenantInfo.getDomain()),
+                    USER_AGENT, ACS_URL, config.getApp()
                     .getArtifact(), config.getUser().getUsername(), config.getUser().getPassword(), httpClient);
             EntityUtils.consume(response.getEntity());
 

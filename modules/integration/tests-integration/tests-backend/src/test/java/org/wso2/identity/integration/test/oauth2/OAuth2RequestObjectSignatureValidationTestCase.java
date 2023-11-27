@@ -242,8 +242,8 @@ public class OAuth2RequestObjectSignatureValidationTestCase extends OAuth2Servic
 
     private String getAuthzRequestUrl(String clientId, String callbackUrl) {
 
-        return OAuth2Constant.AUTHORIZE_ENDPOINT_URL + "?" + "client_id=" + clientId + "&redirect_uri=" + callbackUrl +
-                "&response_type=code&scope=openid%20internal_login";
+        return getTenantQualifiedURL(OAuth2Constant.AUTHORIZE_ENDPOINT_URL, tenantInfo.getDomain()) + "?" + "client_id="
+                + clientId + "&redirect_uri=" + callbackUrl + "&response_type=code&scope=openid%20internal_login";
     }
 
     private String buildPlainJWT(String consumerKey) {
@@ -257,7 +257,8 @@ public class OAuth2RequestObjectSignatureValidationTestCase extends OAuth2Servic
         JWTClaimsSet.Builder jwtClaimsSetBuilder = new JWTClaimsSet.Builder();
         jwtClaimsSetBuilder.subject(consumerKey);
         jwtClaimsSetBuilder.issuer(consumerKey);
-        jwtClaimsSetBuilder.audience(Collections.singletonList(OAuth2Constant.ACCESS_TOKEN_ENDPOINT));
+        jwtClaimsSetBuilder.audience(Collections.singletonList(getTenantQualifiedURL(
+                OAuth2Constant.ACCESS_TOKEN_ENDPOINT, tenantInfo.getDomain())));
         jwtClaimsSetBuilder.claim("client_id", consumerKey);
         jwtClaimsSetBuilder.issueTime(new Date());
         return jwtClaimsSetBuilder.build();

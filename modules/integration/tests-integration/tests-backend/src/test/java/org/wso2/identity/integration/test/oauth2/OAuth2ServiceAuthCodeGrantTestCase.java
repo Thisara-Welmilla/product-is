@@ -76,11 +76,15 @@ public class OAuth2ServiceAuthCodeGrantTestCase extends OAuth2ServiceAbstractInt
     private RequestConfig requestConfig;
     private CloseableHttpClient client;
     private String applicationId;
+    private String approvalUrl;
+    private String commonAuthUrl;
 
     @BeforeClass(alwaysRun = true)
     public void testInit() throws Exception {
 
         super.init(TestUserMode.SUPER_TENANT_USER);
+        approvalUrl = getTenantQualifiedURL(OAuth2Constant.APPROVAL_URL, tenantInfo.getDomain());
+        commonAuthUrl =  getTenantQualifiedURL(COMMON_AUTH_URL, tenantInfo.getDomain());
         cookieSpecRegistry = RegistryBuilder.<CookieSpecProvider>create()
                 .register(CookieSpecs.DEFAULT, new RFC6265CookieSpecProvider())
                 .build();
@@ -125,7 +129,7 @@ public class OAuth2ServiceAuthCodeGrantTestCase extends OAuth2ServiceAbstractInt
         urlParameters.add(new BasicNameValuePair("grantType", OAuth2Constant.OAUTH2_GRANT_TYPE_CODE));
         urlParameters.add(new BasicNameValuePair("consumerKey", consumerKey));
         urlParameters.add(new BasicNameValuePair("callbackurl", OAuth2Constant.CALLBACK_URL));
-        urlParameters.add(new BasicNameValuePair("authorizeEndpoint", OAuth2Constant.APPROVAL_URL));
+        urlParameters.add(new BasicNameValuePair("authorizeEndpoint", approvalUrl));
         urlParameters.add(new BasicNameValuePair("authorize", OAuth2Constant.AUTHORIZE_PARAM));
         urlParameters.add(new BasicNameValuePair("scope", ""));
 
@@ -164,7 +168,7 @@ public class OAuth2ServiceAuthCodeGrantTestCase extends OAuth2ServiceAbstractInt
             String pastreCookie = response.getFirstHeader("Set-Cookie").getValue().split(";")[0];
             EntityUtils.consume(response.getEntity());
 
-            response = Utils.sendPOSTConsentMessage(response, COMMON_AUTH_URL, USER_AGENT, Utils.getRedirectUrl
+            response = Utils.sendPOSTConsentMessage(response, commonAuthUrl, USER_AGENT, Utils.getRedirectUrl
                     (response), client, pastreCookie);
             EntityUtils.consume(response.getEntity());
         }
@@ -298,8 +302,7 @@ public class OAuth2ServiceAuthCodeGrantTestCase extends OAuth2ServiceAbstractInt
         urlParameters.add(new BasicNameValuePair(OAuth2Constant.CONSUMER_KEY_PLAYGROUND_NAME, consumerKey));
         urlParameters.add(new BasicNameValuePair(OAuth2Constant.CALLBACKURL_PLAYGROUND_NAME, OAuth2Constant
                 .CALLBACK_URL));
-        urlParameters.add(new BasicNameValuePair(OAuth2Constant.AUTHORIZE_ENDPOINT_PLAYGROUND_NAME, OAuth2Constant
-                .APPROVAL_URL));
+        urlParameters.add(new BasicNameValuePair(OAuth2Constant.AUTHORIZE_ENDPOINT_PLAYGROUND_NAME, approvalUrl));
         urlParameters.add(new BasicNameValuePair(OAuth2Constant.AUTHORIZE_PLAYGROUND_NAME, OAuth2Constant
                 .AUTHORIZE_PARAM));
         urlParameters.add(new BasicNameValuePair(OAuth2Constant.SCOPE_PLAYGROUND_NAME, ""));
@@ -389,8 +392,8 @@ public class OAuth2ServiceAuthCodeGrantTestCase extends OAuth2ServiceAbstractInt
         List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("client_id", consumerKey));
         AutomationContext automationContext = new AutomationContext("IDENTITY", TestUserMode.SUPER_TENANT_ADMIN);
-        String authorizeEndpoint = automationContext.getContextUrls().getBackEndUrl()
-                .replace("services/", "oauth2/authorize");
+        String authorizeEndpoint = getTenantQualifiedURL(automationContext.getContextUrls().getBackEndUrl()
+                .replace("services/", "oauth2/authorize"), tenantInfo.getDomain());
         HttpResponse response = sendPostRequestWithParameters(client, urlParameters, authorizeEndpoint);
         Header locationHeader = response.getFirstHeader(OAuth2Constant.HTTP_RESPONSE_HEADER_LOCATION);
         Assert.assertTrue(locationHeader.getValue().startsWith(OAuth2Constant.OAUTH2_DEFAULT_ERROR_URL),

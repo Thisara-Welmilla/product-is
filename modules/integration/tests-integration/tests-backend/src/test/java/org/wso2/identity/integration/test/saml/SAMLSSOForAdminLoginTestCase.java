@@ -51,13 +51,13 @@ public class SAMLSSOForAdminLoginTestCase extends AbstractSAMLSSOTestCase {
             null, null);
 
     // Constants.
-    private static final String SAML_ACS_URL = "https://localhost:9853/acs";
-    private static final String SAML_SSO_URL = "https://localhost:9853/samlsso";
+    private static final String SAML_ACS_URL = "https://localhost:9853/t/carbon.super/acs";
+    private static final String SAML_SSO_URL = "https://localhost:9853/t/carbon.super/samlsso";
     private static final String MANAGEMENT_CONSOLE_LOGIN_URL = "https://localhost:9853/carbon/admin/login.jsp";
     private static final String MANAGEMENT_CONSOLE_LOGOUT_URL = "https://localhost:9853/carbon/admin/logout_action.jsp";
     private static final String MANAGEMENT_CONSOLE_HOME_URL = "https://localhost:9853/carbon/admin/index.jsp";
     private static final String AUTHENTICATION_PORTAL_LOGIN_URL =
-            "https://localhost:9853/authenticationendpoint/login.do";
+            "https://localhost:9853/t/carbon.super/authenticationendpoint/login.do";
     private static final String USERNAME = "admin";
     private static final String PASSWORD = "admin";
 
@@ -132,7 +132,7 @@ public class SAMLSSOForAdminLoginTestCase extends AbstractSAMLSSOTestCase {
 
             log.debug("Sending login request to SAML SSO endpoint.");
             response = Utils.sendPOSTMessage(sessionKey, SAML_SSO_URL, USER_AGENT, AUTHENTICATION_PORTAL_LOGIN_URL,
-                    "", USERNAME, PASSWORD, httpClient);
+                    "", USERNAME, PASSWORD, httpClient, SAML_SSO_URL);
             Assert.assertEquals(response.getStatusLine().getStatusCode(), 200,
                     "SAML SSO Login failed for admin user.");
 

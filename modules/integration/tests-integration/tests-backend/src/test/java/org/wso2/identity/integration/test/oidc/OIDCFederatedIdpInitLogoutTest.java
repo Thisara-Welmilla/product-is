@@ -125,9 +125,9 @@ public class OIDCFederatedIdpInitLogoutTest extends AbstractIdentityFederationTe
     private static final String PRIMARY_IS_IDP_NAME = "trustedIdP";
     private static final String PRIMARY_IS_IDP_AUTHENTICATOR_NAME_OIDC = "OpenIDConnectAuthenticator";
     private static final String ENCODED_PRIMARY_IS_IDP_AUTHENTICATOR_ID_OIDC = "T3BlbklEQ29ubmVjdEF1dGhlbnRpY2F0b3I";
-    private static final String PRIMARY_IS_IDP_CALLBACK_URL = "https://localhost:9853/commonauth";
-    private static final String PRIMARY_IS_BACK_CHANNEL_LOGOUT_ENDPOINT = "https://localhost:9853/identity/oidc/slo";
-    private static final String PRIMARY_IS_SESSION_EXTENSION_ENDPOINT = "https://localhost:9853/identity/extend" +
+    private static final String PRIMARY_IS_IDP_CALLBACK_URL = "https://localhost:9853/t/carbon.super/commonauth";
+    private static final String PRIMARY_IS_BACK_CHANNEL_LOGOUT_ENDPOINT = "https://localhost:9853/t/carbon.super/identity/oidc/slo";
+    private static final String PRIMARY_IS_SESSION_EXTENSION_ENDPOINT = "https://localhost:9853/t/carbon.super/identity/extend" +
             "-session?idpSessionKey=";
 
     private static final String SECONDARY_IS_TEST_USERNAME = "testFederatedUser";
@@ -135,13 +135,13 @@ public class OIDCFederatedIdpInitLogoutTest extends AbstractIdentityFederationTe
     private static final String SECONDARY_IS_TEST_USER_ROLES = "admin";
 
     private static final String SECONDARY_IS_SP_NAME = "secondarySP";
-    private static final String SECONDARY_IS_SAML_SSO_URL = "https://localhost:9854/samlsso";
-    private static final String SECONDARY_IS_COMMONAUTH_URL = "https://localhost:9854/commonauth";
-    private static final String SECONDARY_IS_TOKEN_ENDPOINT = "https://localhost:9854/oauth2/token";
-    private static final String SECONDARY_IS_LOGOUT_ENDPOINT = "https://localhost:9854/oidc/logout";
-    private static final String SECONDARY_IS_AUTHORIZE_ENDPOINT = "https://localhost:9854/oauth2/authorize";
-    private static final String SECONDARY_IS_JWKS_URI = "https://localhost:9854/oauth2/jwks";
-    private static final String SECONDARY_IS_SESSION_EXTENSION_ENDPOINT = "https://localhost:9854/identity/extend" +
+    private static final String SECONDARY_IS_SAML_SSO_URL = "https://localhost:9854/t/carbon.super/samlsso";
+    private static final String SECONDARY_IS_COMMONAUTH_URL = "https://localhost:9854/t/carbon.super/commonauth";
+    private static final String SECONDARY_IS_TOKEN_ENDPOINT = "https://localhost:9854/t/carbon.super/oauth2/token";
+    private static final String SECONDARY_IS_LOGOUT_ENDPOINT = "https://localhost:9854/t/carbon.super/oidc/logout";
+    private static final String SECONDARY_IS_AUTHORIZE_ENDPOINT = "https://localhost:9854/t/carbon.super/oauth2/authorize";
+    private static final String SECONDARY_IS_JWKS_URI = "https://localhost:9854/t/carbon.super/oauth2/jwks";
+    private static final String SECONDARY_IS_SESSION_EXTENSION_ENDPOINT = "https://localhost:9854/t/carbon.super/identity/extend" +
             "-session?idpSessionKey=";
 
     private static final String HTTPS_LOCALHOST_SERVICES = "https://localhost:%s/";

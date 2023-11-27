@@ -77,11 +77,15 @@ public class OIDCAuthCodeGrantSSOTestCase extends OIDCAbstractIntegrationTest {
     protected HttpClient client;
     protected List<NameValuePair> consentParameters = new ArrayList<>();
 
+    private String approvalUrl;
+
 
     @BeforeClass(alwaysRun = true)
     public void testInit() throws Exception {
 
         super.init();
+
+        approvalUrl = getTenantQualifiedURL(OAuth2Constant.APPROVAL_URL, tenantInfo.getDomain());
 
         initUser();
         createUser(user);
@@ -117,7 +121,7 @@ public class OIDCAuthCodeGrantSSOTestCase extends OIDCAbstractIntegrationTest {
 
         //When accessing the below endpoint from with invalid session it should provide a message with login_required
         OIDCApplication application = applications.get(OIDCUtilTest.playgroundAppOneAppName);
-        URI uri = new URIBuilder(OAuth2Constant.APPROVAL_URL)
+        URI uri = new URIBuilder(approvalUrl)
                 .addParameter("client_id", application.getClientId())
                 .addParameter("scope", "openid")
                 .addParameter("response_type", "code")
@@ -194,7 +198,7 @@ public class OIDCAuthCodeGrantSSOTestCase extends OIDCAbstractIntegrationTest {
                                               HttpClient client, CookieStore cookieStore)
             throws Exception {
 
-        List<NameValuePair> urlParameters = OIDCUtilTest.getNameValuePairs(application);
+        List<NameValuePair> urlParameters = OIDCUtilTest.getNameValuePairs(application, approvalUrl);
         HttpResponse response = sendPostRequestWithParameters(client, urlParameters, String.format
                 (OIDCUtilTest.targetApplicationUrl, application.getApplicationContext() + OAuth2Constant.PlaygroundAppPaths
                         .appUserAuthorizePath));
@@ -292,7 +296,7 @@ public class OIDCAuthCodeGrantSSOTestCase extends OIDCAbstractIntegrationTest {
         HttpResponse response = sendApprovalPostWithConsent(client, sessionDataKeyConsent, consentParameters);
         Assert.assertNotNull(response, "Approval request failed for " + application.getApplicationName() + ". " +
                 "response is invalid.");
-
+        //Location: https://localhost:9853/t/carbon.super/authenticationendpoint/oauth2_error.do?oauthErrorCode=invalid_request&oauthErrorMsg=Invalid+authorization+request&crId=098a2601-8e35-4878-b63d-3fbab45c6746
         Header locationHeader = response.getFirstHeader(OAuth2Constant.HTTP_RESPONSE_HEADER_LOCATION);
         Assert.assertNotNull(locationHeader, "Approval request failed for " + application.getApplicationName() + ". "
                 + "Location header is null.");
@@ -350,7 +354,7 @@ public class OIDCAuthCodeGrantSSOTestCase extends OIDCAbstractIntegrationTest {
 
     private void testUserClaims() throws Exception {
 
-        HttpGet request = new HttpGet(OAuth2Constant.USER_INFO_ENDPOINT);
+        HttpGet request = new HttpGet(getTenantQualifiedURL(OAuth2Constant.USER_INFO_ENDPOINT, tenantInfo.getDomain()));
 
         request.setHeader("User-Agent", OAuth2Constant.USER_AGENT);
         request.setHeader("Authorization", "Bearer " + accessToken);
@@ -411,7 +415,8 @@ public class OIDCAuthCodeGrantSSOTestCase extends OIDCAbstractIntegrationTest {
 
         List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("callbackurl", application.getCallBackURL()));
-        urlParameters.add(new BasicNameValuePair("accessEndpoint", OAuth2Constant.ACCESS_TOKEN_ENDPOINT));
+        urlParameters.add(new BasicNameValuePair("accessEndpoint", getTenantQualifiedURL(
+                OAuth2Constant.ACCESS_TOKEN_ENDPOINT, tenantInfo.getDomain())));
         urlParameters.add(new BasicNameValuePair("consumerSecret", application.getClientSecret()));
         HttpResponse response = sendPostRequestWithParameters(client, urlParameters, String.format
                 (OIDCUtilTest.targetApplicationUrl, application.getApplicationContext() + OAuth2Constant.PlaygroundAppPaths

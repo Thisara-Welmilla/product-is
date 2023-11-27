@@ -25,6 +25,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.message.BasicHeader;
 import org.testng.Assert;
 import org.wso2.carbon.automation.engine.context.beans.Tenant;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.identity.integration.common.utils.ISIntegrationTest;
 import org.wso2.identity.integration.test.rest.api.server.challenge.v1.model.UserChallengeAnswer;
 import org.wso2.identity.integration.test.utils.OAuth2Constant;
@@ -58,8 +59,11 @@ public class ChallengeQuestionsRestClient extends RestBaseClient {
                                            UserChallengeAnswer challengeAsnwerObj) throws Exception {
 
         String jsonRequest = toJSONString(challengeAsnwerObj);
-        String endPointUrl = serverUrl + ISIntegrationTest.getTenantedRelativePath(String.format(
-                CHALLENGE_QUESTION_BASE_PATH, userId) + PATH_SEPARATOR +  questionSetId, tenantDomain);
+        String endPointUrl = serverUrl + String.format(
+                CHALLENGE_QUESTION_BASE_PATH, userId) + PATH_SEPARATOR +  questionSetId;
+        if (!MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
+            endPointUrl = ISIntegrationTest.getTenantedRelativePath(endPointUrl, tenantDomain);
+        }
 
         try (CloseableHttpResponse response = getResponseOfHttpPost(endPointUrl, jsonRequest, getHeaders())) {
             Assert.assertEquals(response.getStatusLine().getStatusCode(), HttpServletResponse.SC_CREATED,

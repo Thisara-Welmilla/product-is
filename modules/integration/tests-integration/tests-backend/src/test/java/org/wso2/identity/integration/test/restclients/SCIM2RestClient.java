@@ -265,27 +265,18 @@ public class SCIM2RestClient extends RestBaseClient {
     }
 
     private String getUsersPath() {
-        if (tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
-            return serverUrl + SCIM2_USERS_ENDPOINT;
-        } else {
-            return serverUrl + TENANT_PATH + tenantDomain + PATH_SEPARATOR + SCIM2_USERS_ENDPOINT;
-        }
+
+        return serverUrl + TENANT_PATH + tenantDomain + PATH_SEPARATOR + SCIM2_USERS_ENDPOINT;
     }
 
     private String getRolesPath() {
-        if (tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
-            return serverUrl + SCIM2_ROLES_ENDPOINT;
-        } else {
-            return serverUrl + TENANT_PATH + tenantDomain + PATH_SEPARATOR + SCIM2_ROLES_ENDPOINT;
-        }
+
+        return serverUrl + TENANT_PATH + tenantDomain + PATH_SEPARATOR + SCIM2_ROLES_ENDPOINT;
     }
 
     private String getGroupsPath() {
-        if (tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
-            return serverUrl + SCIM2_GROUPS_ENDPOINT;
-        } else {
-            return serverUrl + TENANT_PATH + tenantDomain + PATH_SEPARATOR + SCIM2_GROUPS_ENDPOINT;
-        }
+
+        return serverUrl + TENANT_PATH + tenantDomain + PATH_SEPARATOR + SCIM2_GROUPS_ENDPOINT;
     }
 
     /**
