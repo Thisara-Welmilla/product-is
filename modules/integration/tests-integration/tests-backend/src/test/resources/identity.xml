@@ -139,7 +139,7 @@
 			<ReceivePort>${Ports.ThriftEntitlementReceivePort}</ReceivePort>
 			<ClientTimeout>10000</ClientTimeout>
 			<KeyStore>
-				<Location>${carbon.home}/repository/resources/security/wso2carbon.jks</Location>
+				<Location>${carbon.home}/repository/resources/security/wso2carbon.p12</Location>
 				<Password>wso2carbon</Password>
 			</KeyStore>
 		</ThirftBasedEntitlementConfig>

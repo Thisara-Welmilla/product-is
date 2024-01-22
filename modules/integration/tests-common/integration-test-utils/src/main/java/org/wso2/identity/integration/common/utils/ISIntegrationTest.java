@@ -142,7 +142,7 @@ public class ISIntegrationTest {
     public void setSystemproperties() {
 
         System.setProperty("javax.net.ssl.trustStore", FrameworkPathUtil.getSystemResourceLocation() + File.separator +
-                "keystores" + File.separator  + "products" + File.separator + "wso2carbon.jks");
+                "keystores" + File.separator  + "products" + File.separator + "wso2carbon.p12");
         System.setProperty("javax.net.ssl.trustStorePassword",
                 "wso2carbon");
         System.setProperty("javax.net.ssl.trustStoreType", "JKS");

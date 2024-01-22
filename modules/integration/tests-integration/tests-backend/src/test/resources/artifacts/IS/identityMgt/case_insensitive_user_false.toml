@@ -25,8 +25,9 @@ username = "wso2carbon"
 password = "wso2carbon"
 
 [keystore.primary]
-file_name = "wso2carbon.jks"
+file_name = "wso2carbon.p12"
 password = "wso2carbon"
+type="PKCS12"
 
 [user_store.properties]
 CaseInsensitiveUsername = "false"

@@ -24,8 +24,9 @@ password = "$env{SHARED_DATABASE_PASSWORD}"
 type = "database_unique_id"
 
 [keystore.primary]
-name = "wso2carbon.jks"
+name = "wso2carbon.p12"
 password = "wso2carbon"
+type="PKCS12"
 
 [oauth]
 prompt_consent = false

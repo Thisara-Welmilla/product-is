@@ -175,7 +175,7 @@ public class SAMLErrorResponseTestCase extends ISIntegrationTest {
     private void setSystemProperties() {
 
         URL resourceUrl = getClass().getResource(ISIntegrationTest.URL_SEPARATOR + "keystores" + ISIntegrationTest.URL_SEPARATOR
-                + "products" + ISIntegrationTest.URL_SEPARATOR + "wso2carbon.jks");
+                + "products" + ISIntegrationTest.URL_SEPARATOR + "wso2carbon.p12");
         System.setProperty(JAVAX_NET_SSL_TRUSTORE, resourceUrl.getPath());
         System.setProperty(JAVAX_NET_SSL_TRUSTORE_PASSWORD, "wso2carbon");
         System.setProperty(JAVAX_NET_SSL_TRUSTORE_TYPE, "JKS");

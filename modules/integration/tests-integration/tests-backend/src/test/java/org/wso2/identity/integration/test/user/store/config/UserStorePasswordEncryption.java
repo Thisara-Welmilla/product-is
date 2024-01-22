@@ -82,7 +82,7 @@ public class UserStorePasswordEncryption extends ISIntegrationTest {
         serverConfigurationManager = new ServerConfigurationManager(isServer);
         keyStoreFilePath =
                 getTestArtifactLocation() + File.separator + "keystores" + File.separator + "products" + File.separator
-                        + "wso2carbon.jks";
+                        + "wso2carbon.p12";
         userstoreDeploymentDir = Utils.getResidentCarbonHome() + File.separator + "repository" + File.separator +
                 "deployment" + File.separator + "server" + File.separator + "userstores";
     }
