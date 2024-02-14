@@ -363,7 +363,7 @@ httpcore_4.4.16.wso2v1.jar                                                      
 org.wso2.carbon.security.mgt_7.0.27.jar                                                             bundle         apache2
 org.wso2.carbon.tenant.keystore.mgt_4.11.19.jar                                                     bundle         apache2
 org.wso2.carbon.databridge.commons_5.2.58.jar                                                       bundle         apache2
-org.wso2.carbon.identity.scim.common_5.7.4.jar                                                      bundle         apache2
+org.wso2.carbon.identity.scim.common_5.7.7.jar                                                      bundle         apache2
 org.wso2.carbon.identity.governance.stub_7.0.27.jar                                                 bundle         apache2
 org.wso2.carbon.extension.identity.x509Certificate.validation_1.1.4.jar                             bundle         apache2
 ua-parser_1.5.4.wso2v2.jar                                                                          bundle         apache2
