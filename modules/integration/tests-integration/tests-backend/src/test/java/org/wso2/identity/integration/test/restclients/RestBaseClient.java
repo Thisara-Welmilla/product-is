@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023-2024, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -39,9 +39,11 @@ public class RestBaseClient {
 
     public static final String LOCATION_HEADER = "Location";
     public static final String BASIC_AUTHORIZATION_ATTRIBUTE = "Basic ";
+    public static final String BEARER_TOKEN_AUTHORIZATION_ATTRIBUTE = "Bearer ";
     public static final String CONTENT_TYPE_ATTRIBUTE = "Content-Type";
     public static final String AUTHORIZATION_ATTRIBUTE = "Authorization";
     public static final String USER_AGENT_ATTRIBUTE = "User-Agent";
+    public static final String API_SERVER_PATH = "api/server/v1";
     public static final String TENANT_PATH = "t/";
     public static final String ORGANIZATION_PATH = "o/";
     public static final String PATH_SEPARATOR = "/";
@@ -60,6 +62,7 @@ public class RestBaseClient {
      * @return Relevant json string.
      */
     public String toJSONString(java.lang.Object object) {
+
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         return gson.toJson(object);
     }
@@ -69,8 +72,10 @@ public class RestBaseClient {
      *
      * @param responseString Respective Http response.
      * @return Relevant json object.
+     * @throws Exception If an error occurred while getting a JSON object from a json string.
      */
     public JSONObject getJSONObject(String responseString) throws Exception {
+
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject) parser.parse(responseString);
         if (json == null) {
@@ -85,8 +90,10 @@ public class RestBaseClient {
      *
      * @param responseString Respective Http response.
      * @return Relevant JSONArray object.
+     * @throws Exception If an error occurred while getting a JSON array from a JSON string.
      */
     public JSONArray getJSONArray(String responseString) throws Exception {
+
         JSONParser parser = new JSONParser();
         JSONArray jsonArray = (JSONArray) parser.parse(responseString);
         if (jsonArray == null) {
@@ -97,15 +104,17 @@ public class RestBaseClient {
     }
 
     /**
-     * Execute and get the response of HTTP POST
+     * Execute and get the response of HTTP POST.
      *
      * @param endPointUrl REST endpoint.
-     * @param jsonRequest json body.
-     * @param headers header list of the request.
+     * @param jsonRequest Json body.
+     * @param headers Header list of the request.
      * @return Response of the Http request.
+     * @throws IOException If an error occurred while executing http POST request.
      */
     public CloseableHttpResponse getResponseOfHttpPost(String endPointUrl, String jsonRequest, Header[] headers)
             throws IOException {
+
         HttpPost request = new HttpPost(endPointUrl);
         request.setHeaders(headers);
         request.setEntity(new StringEntity(jsonRequest));
@@ -114,14 +123,16 @@ public class RestBaseClient {
     }
 
     /**
-     * Execute and get the response of HTTP GET
+     * Execute and get the response of HTTP GET.
      *
      * @param endPointUrl REST endpoint.
-     * @param headers header list of the request.
+     * @param headers     Header list of the request.
      * @return Response of the Http request.
+     * @throws IOException If an error occurred while executing http GET request.
      */
     public CloseableHttpResponse getResponseOfHttpGet(String endPointUrl, Header[] headers)
             throws IOException {
+
         HttpGet request = new HttpGet(endPointUrl);
         request.setHeaders(headers);
 
@@ -129,14 +140,16 @@ public class RestBaseClient {
     }
 
     /**
-     * Execute and get the response of HTTP PATCH
+     * Execute and get the response of HTTP PATCH.
      *
      * @param endPointUrl REST endpoint.
-     * @param jsonRequest json body.
-     * @param headers header list of the request.
+     * @param jsonRequest Json body.
+     * @param headers     Header list of the request.
      * @return Response of the Http request.
+     * @throws IOException If an error occurred while executing http PATCH request.
      */
     public CloseableHttpResponse getResponseOfHttpPatch(String endPointUrl, String jsonRequest, Header[] headers) throws IOException {
+
         HttpPatch request = new HttpPatch(endPointUrl);
         request.setHeaders(headers);
         request.setEntity(new StringEntity(jsonRequest));
@@ -145,13 +158,15 @@ public class RestBaseClient {
     }
 
     /**
-     * Execute and get the response of HTTP DELETE
+     * Execute and get the response of HTTP DELETE.
      *
      * @param endPointUrl REST endpoint.
-     * @param headers header list of the request.
+     * @param headers     Header list of the request.
      * @return Response of the Http request.
+     * @throws IOException If an error occurred while executing http DELETE request.
      */
     public CloseableHttpResponse getResponseOfHttpDelete(String endPointUrl, Header[] headers) throws IOException {
+
         HttpDelete request = new HttpDelete(endPointUrl);
         request.setHeaders(headers);
 
@@ -159,20 +174,21 @@ public class RestBaseClient {
     }
 
     /**
-     * Execute and get the response of HTTP PUT
+     * Execute and get the response of HTTP PUT.
      *
      * @param endPointUrl REST endpoint.
-     * @param jsonRequest json body.
-     * @param headers header list of the request.
+     * @param jsonRequest Json body.
+     * @param headers     Header list of the request.
      * @return Response of the Http request.
+     * @throws IOException If an error occurred while executing http PUT request.
      */
     public CloseableHttpResponse getResponseOfHttpPut(String endPointUrl, String jsonRequest, Header[] headers)
             throws IOException {
+
         HttpPut request = new HttpPut(endPointUrl);
         request.setHeaders(headers);
         request.setEntity(new StringEntity(jsonRequest));
 
         return client.execute(request);
     }
-
 }

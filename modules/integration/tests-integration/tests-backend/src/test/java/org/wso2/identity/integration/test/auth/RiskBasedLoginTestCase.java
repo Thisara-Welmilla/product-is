@@ -18,6 +18,8 @@
 
 package org.wso2.identity.integration.test.auth;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.commons.io.FileUtils;
@@ -39,11 +41,14 @@ import org.apache.http.util.EntityUtils;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.wso2.carbon.identity.application.common.model.idp.xsd.IdentityProvider;
 import org.wso2.carbon.identity.application.common.model.xsd.AuthenticationStep;
 import org.wso2.carbon.identity.application.common.model.xsd.LocalAndOutboundAuthenticationConfig;
 import org.wso2.carbon.identity.application.common.model.xsd.LocalAuthenticatorConfig;
+import org.wso2.carbon.identity.application.common.model.xsd.ServiceProvider;
 import org.wso2.carbon.integration.common.admin.client.AuthenticatorClient;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 import org.wso2.identity.integration.common.clients.application.mgt.ApplicationManagementServiceClient;
@@ -67,6 +72,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -81,6 +87,7 @@ import static org.wso2.identity.integration.test.utils.OAuth2Constant.SESSION_DA
 public class RiskBasedLoginTestCase extends AbstractAdaptiveAuthenticationTestCase {
 
     private static final String PRIMARY_IS_APPLICATION_NAME = "testOauthApp";
+    public static final String ANALYTICS_PAYLOAD_JSON = "analytics-payload.json";
 
     private AuthenticatorClient logManger;
     private OauthAdminClient oauthAdminClient;
@@ -97,10 +104,13 @@ public class RiskBasedLoginTestCase extends AbstractAdaptiveAuthenticationTestCa
 
     private Map<String, Integer> userRiskScores = new HashMap<>();
 
+    private ServiceProvider serviceProvider;
+
     MicroserviceServer microserviceServer;
 
     @BeforeClass(alwaysRun = true)
-    public void testInit() throws Exception {
+    @Parameters({"scriptEngine"})
+    public void testInit(@Optional("nashorn") String scriptEngine) throws Exception {
 
         super.init();
 
@@ -143,7 +153,7 @@ public class RiskBasedLoginTestCase extends AbstractAdaptiveAuthenticationTestCa
 
         log.info("Restarting the server at: " + isServer.getContextUrls().getBackEndUrl());
         serverConfigurationManager = new ServerConfigurationManager(isServer);
-        changeISConfiguration();
+        changeISConfiguration(scriptEngine);
         log.info("Restarting the server at: " + isServer.getContextUrls().getBackEndUrl() + " is successful");
 
         super.init();
@@ -175,7 +185,7 @@ public class RiskBasedLoginTestCase extends AbstractAdaptiveAuthenticationTestCa
 
         createOauthApp(CALLBACK_URL, PRIMARY_IS_APPLICATION_NAME, oauthAdminClient);
         // Create service provider in primary IS with conditional authentication script enabled.
-        createServiceProvider(PRIMARY_IS_APPLICATION_NAME,
+        serviceProvider = createServiceProvider(PRIMARY_IS_APPLICATION_NAME,
                 applicationManagementServiceClient, oauthAdminClient, script);
 
         microserviceServer = MicroserviceUtil.initMicroserviceServer();
@@ -188,12 +198,24 @@ public class RiskBasedLoginTestCase extends AbstractAdaptiveAuthenticationTestCa
         userRiskScores.put(userInfo.getUserName(), 0);
     }
 
-    private void changeISConfiguration() throws Exception {
+    private void changeAdaptiveAuthenticationScript(String scriptFileName) throws Exception {
+
+        String script = getConditionalAuthScript(scriptFileName);
+        serviceProvider.getLocalAndOutBoundAuthenticationConfig().getAuthenticationScriptConfig().setContent(script);
+        applicationManagementServiceClient.updateApplicationData(serviceProvider);
+    }
+
+    private void changeISConfiguration(String scriptEngine) throws Exception {
+
+        String identityNewResourceFileName = "identity_new_resource.toml";
+        if (scriptEngine.equalsIgnoreCase("nashorn")) {
+            identityNewResourceFileName = "identity_new_resource_nashorn.toml";
+        }
 
         String carbonHome = Utils.getResidentCarbonHome();
         File defaultTomlFile = getDeploymentTomlFile(carbonHome);
         File configuredTomlFile = new File(getISResourceLocation() + File.separator
-                + "identity_new_resource.toml");
+                + identityNewResourceFileName);
         serverConfigurationManager = new ServerConfigurationManager(isServer);
         serverConfigurationManager.applyConfigurationWithoutRestart(configuredTomlFile, defaultTomlFile, true);
         serverConfigurationManager.restartGracefully();
@@ -351,6 +373,29 @@ public class RiskBasedLoginTestCase extends AbstractAdaptiveAuthenticationTestCa
                 "risk based login");
     }
 
+    @Test(groups = "wso2.is", description = "Check conditional authentication flow.")
+    public void testAuthenticationForRiskWithComplexPayload() throws Exception {
+
+        changeAdaptiveAuthenticationScript("RiskBasedLoginScriptPayload.js");
+        cookieStore.clear();
+        response = loginWithOIDC(PRIMARY_IS_APPLICATION_NAME, consumerKey, client);
+
+        EntityUtils.consume(response.getEntity());
+
+        Header locationHeader = response.getFirstHeader(OAuth2Constant.HTTP_RESPONSE_HEADER_LOCATION);
+        Assert.assertNotNull(locationHeader, "Login response header is null");
+        response = sendGetRequest(client, locationHeader.getValue());
+        EntityUtils.consume(response.getEntity());
+        locationHeader = response.getFirstHeader(OAuth2Constant.HTTP_RESPONSE_HEADER_LOCATION);
+
+        log.info("############## " + "testAuthenticationForNoRisk - location header " + locationHeader.getValue());
+
+        URL clientUrl = new URL(locationHeader.getValue());
+        Assert.assertTrue(clientUrl.getQuery().contains("code="), "Authentication flow was un-successful with " +
+                "identifier first login");
+
+    }
+
     @POST
     @Path("/{appName}/{inputStream}")
     @Consumes("application/json")
@@ -369,6 +414,29 @@ public class RiskBasedLoginTestCase extends AbstractAdaptiveAuthenticationTestCa
         response.put("event", responseEvent);
         return response;
 
+    }
+
+    @POST
+    @Path("/risk-based-login-endpoint")
+    @Consumes("application/json")
+    @Produces("application/json")
+    public Map<String, Object> analyticsPayloadReceiver(Map<String, Object> data) throws Exception {
+
+        JsonObject expectedPayload = getJsonObjectFromFile(ANALYTICS_PAYLOAD_JSON);
+        Gson gson = new Gson();
+        String dataStr = gson.toJson(data.get("event"));
+        Map<String, Object> response = new HashMap<>();
+        Map<String, String> responseEvent = new HashMap<>();
+        responseEvent.put("riskScore", String.valueOf(0));
+        JsonObject actualPayload = gson.fromJson(dataStr, JsonObject.class);
+
+        response.put("data", expectedPayload);
+
+        if (expectedPayload.equals(actualPayload)) {
+            response.put("event", responseEvent);
+            return response;
+        }
+        throw new RuntimeException("Expected payload and received payload do not match.");
     }
 
     protected LocalAndOutboundAuthenticationConfig createLocalAndOutboundAuthenticationConfig() throws Exception {
