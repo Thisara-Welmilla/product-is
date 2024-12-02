@@ -26,6 +26,7 @@ public class ISIntegrationUiBaseTest {
         isServer = new AutomationContext(PRODUCT_GROUP_NAME, TestUserMode.SUPER_TENANT_ADMIN);
         this.userInfo = isServer.getContextTenant().getContextUser();
         loginLogoutClient = new LoginLogoutClient(isServer);
+        log.info("ss-testInit-IS-intregartion5");
         sessionCookie = loginLogoutClient.login();
         backendURL = isServer.getContextUrls().getBackEndUrl();
         this.driver = BrowserManager.getWebDriver();
@@ -34,6 +35,7 @@ public class ISIntegrationUiBaseTest {
     protected void init(TestUserMode testUserMode) throws Exception {
         isServer = new AutomationContext(PRODUCT_GROUP_NAME, testUserMode);
         loginLogoutClient = new LoginLogoutClient(isServer);
+        log.info("ss-testInit-IS-intregartion6");
         sessionCookie = loginLogoutClient.login();
         backendURL = isServer.getContextUrls().getBackEndUrl();
         this.driver = BrowserManager.getWebDriver();
