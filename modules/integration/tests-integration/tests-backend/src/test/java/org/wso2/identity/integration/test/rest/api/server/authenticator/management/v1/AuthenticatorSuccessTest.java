@@ -36,6 +36,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
+import org.wso2.carbon.identity.api.server.authenticators.v1.model.AuthenticationType;
 import org.wso2.carbon.identity.api.server.authenticators.v1.model.UserDefinedLocalAuthenticatorCreation;
 import org.wso2.carbon.identity.api.server.authenticators.v1.model.UserDefinedLocalAuthenticatorUpdate;
 import org.wso2.carbon.identity.application.common.model.UserDefinedLocalAuthenticatorConfig;
@@ -211,6 +212,25 @@ public class AuthenticatorSuccessTest extends AuthenticatorTestBase {
     }
 
     @Test(dependsOnMethods = {"testCreateUserDefinedLocalAuthenticator"})
+    public void testGetUserDefinedLocalAuthenticator() {
+
+        Response response = getResponseOfGet(AUTHENTICATOR_CONFIG_API_BASE_PATH + customIdPId);
+        response.then()
+                .log().ifValidationFails()
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK)
+                .header(HttpHeaders.LOCATION, notNullValue())
+                .body("id", equalTo(customIdPId))
+                .body("name", equalTo(AUTHENTICATOR_NAME))
+                .body("displayName", equalTo(AUTHENTICATOR_DISPLAY_NAME))
+                .body("type", equalTo("LOCAL"))
+                .body("definedBy", equalTo("USER"))
+                .body("isEnabled", equalTo(true))
+                .body("endpoint.uri", equalTo(AUTHENTICATOR_ENDPOINT_URI))
+                .body("endpoint.authentication", equalTo(String.valueOf(AuthenticationType.TypeEnum.BASIC)));
+    }
+
+    @Test(dependsOnMethods = {"testGetUserDefinedLocalAuthenticator"})
     public void testUpdateUserDefinedLocalAuthenticator() throws JsonProcessingException {
 
         updatePayload.displayName(AUTHENTICATOR_DISPLAY_NAME + UPDATE_VALUE_POSTFIX);
