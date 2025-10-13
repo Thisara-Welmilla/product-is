@@ -30,6 +30,7 @@ public class ActionUpdateModel  {
 
     private String name;
     private String description;
+    private String version;
     private EndpointUpdateModel endpoint;
     private ORRule rule;
 
@@ -67,6 +68,22 @@ public class ActionUpdateModel  {
     }
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public ActionUpdateModel version(String version) {
+
+        this.version = version;
+        return this;
+    }
+
+    @ApiModelProperty(example = "This is the configuration of pre-action for issuing access token.", value = "")
+    @JsonProperty("version")
+    @Valid @Size(max=255)
+    public String getVersion() {
+        return version;
+    }
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     /**

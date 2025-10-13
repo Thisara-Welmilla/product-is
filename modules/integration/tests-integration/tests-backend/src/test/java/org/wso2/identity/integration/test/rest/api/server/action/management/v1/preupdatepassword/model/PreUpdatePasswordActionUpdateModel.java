@@ -43,6 +43,7 @@ public class PreUpdatePasswordActionUpdateModel extends ActionUpdateModel {
 
         setName(actionUpdateModel.getName());
         setDescription(actionUpdateModel.getDescription());
+        setVersion(actionUpdateModel.getVersion());
         setEndpoint(actionUpdateModel.getEndpoint());
         setRule(actionUpdateModel.getRule());
     }
@@ -115,6 +116,7 @@ public class PreUpdatePasswordActionUpdateModel extends ActionUpdateModel {
         sb.append("class PreUpdatePasswordActionModel {\n");
         sb.append("    name: ").append(toIndentedString(getName())).append("\n");
         sb.append("    description: ").append(toIndentedString(getDescription())).append("\n");
+        sb.append("    version: ").append(toIndentedString(getVersion())).append("\n");
         sb.append("    endpoint: ").append(toIndentedString(getEndpoint())).append("\n");
         sb.append("    passwordSharing: ").append(toIndentedString(passwordSharing)).append("\n");
         sb.append("    attributes: ").append(toIndentedString(attributes)).append("\n");
