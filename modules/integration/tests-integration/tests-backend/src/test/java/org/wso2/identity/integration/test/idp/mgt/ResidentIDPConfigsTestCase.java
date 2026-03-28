@@ -77,6 +77,7 @@ public class ResidentIDPConfigsTestCase extends ISIntegrationTest {
         AuthenticatorClient loginManger = new AuthenticatorClient(backendURL);
         ConfigurationContext configContext = ConfigurationContextFactory.createConfigurationContextFromFileSystem
                 (null, null);
+        log.info("ss-testInit-ResidentIDP");
         String cookie = loginManger.login(username, userPassword, isServer.getInstance().getHosts().get("default"));
         idpMgtServiceClient = new IdentityProviderMgtServiceClient(cookie, isServer.getContextUrls().getBackEndUrl(),
                 configContext);
