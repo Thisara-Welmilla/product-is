@@ -52,9 +52,11 @@ public class AuthenticatorClient {
 
     public String login(String userName, String password, String host)
             throws LoginAuthenticationExceptionException, RemoteException {
+        log.info("ss-testInit-IS-intregartion8");
         Boolean loginStatus;
         ServiceContext serviceContext;
         String sessionCookie;
+        log.info("ss-testInit-IS-intregartion9");
         loginStatus = authenticationAdminStub.login(userName, password, host);
         if (!loginStatus) {
             throw new LoginAuthenticationExceptionException("Login Unsuccessful. Return false as a login status by Server");
@@ -70,7 +72,9 @@ public class AuthenticatorClient {
 
     public Boolean unsuccessfulLogin(String userName, String password, String backEndURL)
             throws LoginAuthenticationExceptionException, RemoteException {
+        log.info("ss-unsuccessfulLogin");
         return authenticationAdminStub.login(userName, password, backEndURL);
+
     }
 
     public void logOut() throws LogoutAuthenticationExceptionException, RemoteException {
